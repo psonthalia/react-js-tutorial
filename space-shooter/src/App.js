@@ -13,16 +13,18 @@ class App extends Component {
     }
     componentDidMount() {
         let enemies = []
-        for (let i = 0; i < 10; i++) {
-            enemies.push(<Enemy x={Math.floor(Math.random() * (window.innerWidth - 150))} y = {Math.floor(Math.random() * 200 + window.innerHeight - 400)} image={"./enemy.png"} getY={this.getY} getX={this.getX}/>)
-        }
+        // Begin Problem 6
         this.setState({enemies: enemies})
     }
     updateY = (y, index) => {
-        this.state.y[index] = y
+        let yCopy = Object.assign({}, this.state.y);
+        yCopy[index] = y
+        this.setState({y: yCopy})
     }
     updateX = (x, index) => {
-        this.state.x[index] = x
+        let xCopy = Object.assign({}, this.state.x);
+        xCopy[index] = x
+        this.setState({x: xCopy})
     }
     getY = () => {
         return this.state.y
@@ -32,7 +34,7 @@ class App extends Component {
     }
   render() {
     return (
-      <div className="App" style={{background: "#000000"}}>
+      <div className="App">
           {this.state.enemies.map((enemy => {
               return(<div>{enemy}</div>);
           }))}
@@ -65,20 +67,13 @@ class Enemy extends React.Component {
     }
     componentDidUpdate() {
         for (let key in this.props.getX()) {
-            if (this.props.getY()[key] >= (this.state.y-20) && this.props.getY()[key] <= (this.state.y+20) && this.props.getX()[key] >= (this.state.x-20) && this.props.getX()[key] <= (this.state.x+20)) {
+            if (this.props.getY()[key] >= (this.state.y-20) && this.props.getY()[key] <= (this.state.y+20) && this.props.getX()[key] >= (this.state.x-20) && this.props.getX()[key] <= (this.state.x+80)) {
                 this.deleteSelf()
             }
         }
     }
     render() {
-        if (this.state.direction) {
-            this.state.x += 5
-        } else {
-            this.state.x -= 5
-        }
-        if (this.state.x < 20 || this.state.x > (window.innerWidth - 90)) {
-            this.state.direction = !this.state.direction
-        }
+        // Begin Problem 7
         return (
             <div>
                 <img style={{position: "absolute", left: this.state.x, bottom: this.state.y}} src={this.props.image} />
@@ -117,12 +112,26 @@ class Ship extends React.Component {
         if(event.keyCode === 40) { //down arrow
             this.setState({movingDown: true})
         }
-        if(event.keyCode === 32) {
+        if(event.keyCode === 32) { //space bar
             this.setState({shooting: true})
         }
     }
     arrowUpFunction(event) {
-        this.setState({movingUp: false, movingLeft: false, movingRight: false, movingDown: false, shooting: false})
+        if(event.keyCode === 37) { //left arrow
+            this.setState({movingLeft: false})
+        }
+        if(event.keyCode === 38) { //up arrow
+            this.setState({movingUp: false})
+        }
+        if(event.keyCode === 39) { //right arrow
+            this.setState({movingRight: false})
+        }
+        if(event.keyCode === 40) { //down arrow
+            this.setState({movingDown: false})
+        }
+        if(event.keyCode === 32) {  //space bar
+            this.setState({shooting: false})
+        }
     }
     componentDidMount(){
         document.addEventListener("keydown", this.arrowFunction, false);
@@ -138,17 +147,18 @@ class Ship extends React.Component {
     }
 
     render() {
+        // Begin Problem 8
         if (this.state.movingUp) {
-            this.state.y += 3
+            this.state.y += 1
         }
         if (this.state.movingLeft) {
-            this.state.x -= 3
+            this.state.x -= 1
         }
         if (this.state.movingRight) {
-            this.state.x += 3
+            this.state.x += 1
         }
         if (this.state.movingDown) {
-            this.state.y -= 3
+            this.state.y -= 1
         }
         let values = Object.keys(this.state.projectiles).map((key => {
             return this.state.projectiles[key];
@@ -181,9 +191,9 @@ class Projectile extends React.Component {
         this.props.updateX(this.props.x, this.props.index)
     }
     componentDidUpdate() {
-        if (this.state.y > window.innerHeight) {
-            this.props.delete(this.props.index)
-        }
+        // if (this.state.y > window.innerHeight) {
+        //     this.props.delete(this.props.index)
+        // }
     }
 
     render() {
